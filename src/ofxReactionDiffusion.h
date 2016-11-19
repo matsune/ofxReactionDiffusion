@@ -32,12 +32,6 @@ public:
     void clearObstacles();
     void clearAll();
 
-    void setPasses(float _passes) { passes = _passes; }
-    void setFeed(float _feed) { feed = _feed; }
-    void setKill(float _kill) { kill = _kill; }
-    void setDu(float _Du) { Du = _Du; }
-    void setDv(float _Dv) { Dv = _Dv; }
-
     void setColor1(float _r, float _g, float _b) { color1.r = _r; color1.g = _g; color1.b = _b; }
     void setColor2(float _r, float _g, float _b) { color2.r = _r; color2.g = _g; color2.b = _b; }
     void setColor3(float _r, float _g, float _b) { color3.r = _r; color3.g = _g; color3.b = _b; }
@@ -49,6 +43,56 @@ public:
     void setColor3Threshold(float _thresh) { color3.a = _thresh; }
     void setColor4Threshold(float _thresh) { color4.a = _thresh; }
     void setColor5Threshold(float _thresh) { color5.a = _thresh; }
+    
+    /*
+     Common Paramters
+     */
+    void setPasses(float _passes) { passes = _passes; }
+    
+    float getPasses() { return passes; }
+    
+    /*
+     Gray-Scott
+     */
+    void setFeed(float _feed) { feed = _feed; }
+    void setKill(float _kill) { kill = _kill; }
+    void setDu(float _Du) { Du = _Du; }
+    void setDv(float _Dv) { Dv = _Dv; }
+    
+    float getFeed() { return feed; }
+    float getKill() { return kill; }
+    float getDu() { return Du; }
+    float getDv() { return Dv; }
+    
+    /*
+     FitzHugh-Nagumo
+     */
+    void setA0(float _a0) { a0 = _a0; }
+    void setA1(float _a1) { a1 = _a1; }
+    void setEpsilon(float _epsilon) { epsilon = _epsilon; }
+    void setDelta(float _delta) { delta = _delta; }
+    void setK1(float _k1) { k1 = _k1; }
+    void setK2(float _k2) { k2 = _k2; }
+    void setK3(float _k3) { k3 = _k3; }
+    
+    float getA0() { return a0; }
+    float getA1() { return a1; }
+    float getEpsilon() { return epsilon; }
+    float getDelta() { return delta; }
+    float getK1() { return k1; }
+    float getK2() { return k2; }
+    float getK3() { return k3; }
+    
+    /*
+     Belousov-Zhabotinsky
+     */
+    void setAlpha(float _alpha) { alpha = _alpha; }
+    void setBeta(float _beta) { alpha = _beta; }
+    void setGamma(float _gamma) { gamma = _gamma; }
+    
+    float getAlpha() { return alpha; }
+    float getBeta() { return beta; }
+    float getGamma() { return gamma; }
     
 private:
     int width, height;
@@ -79,7 +123,7 @@ private:
     float passes;
     
     /*
-     Gray-Scott Parameters
+     Gray-Scott
      */
     float feed;
     float kill;
@@ -87,7 +131,7 @@ private:
     float Dv;
     
     /*
-     FitzHugh-Nagumo Parameters
+     FitzHugh-Nagumo
      */
     float a0;
     float a1;
@@ -98,7 +142,7 @@ private:
     float k3;
     
     /*
-     Belousov-Zhabotinsky Parameters
+     Belousov-Zhabotinsky
      */
     float alpha;
     float beta;
