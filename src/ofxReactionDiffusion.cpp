@@ -9,30 +9,31 @@
 
 ofxReactionDiffusion::ofxReactionDiffusion() {
     mode = RD_MODE_GRAY_SCOTT;
+    
     passes = 0.2;
     
-    a0 = 0.289062;
-    a1 = 0.177734;
+    a0      = 0.289062;
+    a1      = 0.177734;
     epsilon = 1.152344;
-    delta = 1.25;
-    k1 = 2.0996;
-    k2 = 0.083008;
-    k3 = 1.723;
+    delta   = 1.25;
+    k1      = 2.0996;
+    k2      = 0.083008;
+    k3      = 1.723;
     
     feed = 0.0195;
     kill = 0.04;
-    Du = 0.25;
-    Dv = 0.195;
+    Du   = 0.25;
+    Dv   = 0.195;
     
     alpha = 1.0;
-    beta = 1.0;
+    beta  = 1.0;
     gamma = 1.0;
     
-    color1.set(0.0, 0.0, 0.0, 0.0);
-    color2.set(0.0, 0.5, 0.0, 0.2);
-    color3.set(0.0, 1.0, 0.0, 0.4);
-    color4.set(0.0, 0.5, 0.0, 0.6);
-    color5.set(0.0, 1.0, 0.0, 0.8);
+    color1.set(   0.0,    0.0,    0.0, 0.0);
+    color2.set(   0.0,  0.403, 0.6836, 0.2);
+    color3.set(0.7857, 0.0816, 0.7347, 0.4);
+    color4.set(   1.0, 0.1632, 0.4948, 0.6);
+    color5.set(  0.02,   0.78,  0.918, 0.8);
     
     string grayScott = STRINGIFY(
                                     float kernel[9];
@@ -256,8 +257,8 @@ void ofxReactionDiffusion::allocate(int _width, int _height) {
 
 void ofxReactionDiffusion::update() {
     bufferFbo.begin();
-        sourceFbo.draw(0, 0);
-        obstacleFbo.draw(0, 0);
+    sourceFbo.draw(0, 0);
+    obstacleFbo.draw(0, 0);
     bufferFbo.end();
     
     sourceFbo.begin();
