@@ -10,6 +10,11 @@
 
 #define STRINGIFY(A) #A
 
+typedef enum {
+    RD_MODE_GRAYSCOTT,
+    RD_MODE_FITZHUGH_NAGUMO,
+} ReactionDiffusionMode;
+
 class ofxReactionDiffusion {
 
 public:
@@ -18,6 +23,8 @@ public:
     void update();
     void draw(int _x=0, int _y=0, float _width=-1, float _height=-1);
     
+    void setMode(ReactionDiffusionMode _mode) { mode = _mode;}
+
     void addSource(int _x, int _y, float _radius);
     void addObstacle(int _x, int _y, float _radius);
     void clearSources();
@@ -44,6 +51,7 @@ public:
     
 private:
     int width, height;
+    ReactionDiffusionMode mode;
     
     ofFbo sourceFbo;
     ofFbo obstacleFbo;
@@ -51,17 +59,36 @@ private:
     ofFbo coloredFbo;
     
     ofShader grayScottShader;
+    ofShader fitzHughNagumoShader;
     ofShader coloringShader;
-    
-    float passes;
-    float feed;
-    float kill;
-    float Du;
-    float Dv;
     
     ofFloatColor color1;
     ofFloatColor color2;
     ofFloatColor color3;
     ofFloatColor color4;
     ofFloatColor color5;
+    
+    /*
+     Common Paramters
+     */
+    float passes;
+    
+    /*
+     FitzHugh-Nagumo Parameters
+     */
+    float a0;
+    float a1;
+    float epsilon;
+    float delta;
+    float k1;
+    float k2;
+    float k3;
+    
+    /*
+     Gray-Scott Parameters
+     */
+    float feed;
+    float kill;
+    float Du;
+    float Dv;
 };

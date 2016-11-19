@@ -8,7 +8,17 @@
 #include "ofxReactionDiffusion.h"
 
 ofxReactionDiffusion::ofxReactionDiffusion() {
-    passes = 0.6;
+    mode = RD_MODE_GRAYSCOTT;
+    passes = 0.2;
+    
+    a0 = 0.289062;
+    a1 = 0.177734;
+    epsilon = 1.152344;
+    delta = 1.25;
+    k1 = 2.0996;
+    k2 = 0.083008;
+    k3 = 1.723;
+    
     feed = 0.0195;
     kill = 0.04;
     Du = 0.25;
@@ -20,7 +30,7 @@ ofxReactionDiffusion::ofxReactionDiffusion() {
     color4.set(0.0, 0.5, 0.0, 0.6);
     color5.set(0.0, 1.0, 0.0, 0.8);
     
-    string grayscottFragment = STRINGIFY(
+    string grayScott = STRINGIFY(
                                     float kernel[9];
                                     vec2 offset[9];
                                     
@@ -73,8 +83,67 @@ ofxReactionDiffusion::ofxReactionDiffusion() {
                                     }
                                 );
     grayScottShader.unload();
-    grayScottShader.setupShaderFromSource(GL_FRAGMENT_SHADER, grayscottFragment);
+    grayScottShader.setupShaderFromSource(GL_FRAGMENT_SHADER, grayScott);
     grayScottShader.linkProgram();
+    
+    string fitzHughNagumo = STRINGIFY(
+                                      float kernel[9];
+                                      vec2 offset[9];
+                                      
+                                      uniform float passes;
+                                      uniform float a0;
+                                      uniform float a1;
+                                      uniform float epsilon;
+                                      uniform float delta;
+                                      uniform float k1;
+                                      uniform float k2;
+                                      uniform float k3;
+                                      uniform sampler2DRect tex0;
+                                      
+                                      void main(){
+                                          vec2 st = gl_TexCoord[0].st;
+                                          
+                                          offset[0] = vec2( 0.0, -1.0);
+                                          offset[1] = vec2(-1.0,  0.0);
+                                          offset[2] = vec2( 0.0,  0.0);
+                                          offset[3] = vec2( 1.0,  0.0);
+                                          offset[4] = vec2( 0.0,  1.0);
+                                          
+                                          offset[5] = vec2(-1.0, -1.0);
+                                          offset[6] = vec2( 1.0, -1.0);
+                                          offset[7] = vec2(-1.0,  1.0);
+                                          offset[8] = vec2( 1.0,  1.0);
+                                          
+                                          kernel[0] = 1.0;
+                                          kernel[1] = 1.0;
+                                          kernel[2] = -6.82842712;
+                                          kernel[3] = 1.0;
+                                          kernel[4] = 1.0;
+                                          
+                                          kernel[5] = 0.707106781;
+                                          kernel[6] = 0.707106781;
+                                          kernel[7] = 0.707106781;
+                                          kernel[8] = 0.707106781;
+                                          
+                                          vec2 lap = vec2(0.0, 0.0);
+                                          for(int i=0; i<9; i++){
+                                              vec2 tmp = texture2DRect(tex0, st + offset[i]).rb;
+                                              lap += tmp * kernel[i];
+                                          }
+                                          
+                                          float u = texture2DRect(tex0, st).r;
+                                          float v = texture2DRect(tex0, st).b;
+
+                                          float du = (k1 * u) - (k2 * pow(u, 2.0)) - pow(u, 3.0) - v + lap.x;
+                                          float dv = epsilon * (k3 * u - a1 * v - a0) + delta * lap.y;
+                                          u += du * passes * 0.1;
+                                          v += dv * passes * 0.1;
+                                          gl_FragColor = vec4(clamp(u, 0.0, 1.0), 0, clamp(v, 0.0, 1.0), 1.0);
+                                      }
+                                    );
+    fitzHughNagumoShader.unload();
+    fitzHughNagumoShader.setupShaderFromSource(GL_FRAGMENT_SHADER, fitzHughNagumo);
+    fitzHughNagumoShader.linkProgram();
     
     string coloringFragment = STRINGIFY(
                                    uniform vec4 color1;
@@ -144,14 +213,33 @@ void ofxReactionDiffusion::update() {
     bufferFbo.end();
     
     sourceFbo.begin();
-        grayScottShader.begin();
+    switch (mode) {
+        case RD_MODE_GRAYSCOTT:
+            grayScottShader.begin();
             grayScottShader.setUniform1f("passes", passes);
             grayScottShader.setUniform1f("feed", feed);
             grayScottShader.setUniform1f("kill", kill);
             grayScottShader.setUniform1f("Du", Du);
             grayScottShader.setUniform1f("Dv", Dv);
             bufferFbo.draw(0, 0);
-        grayScottShader.end();
+            grayScottShader.end();
+            break;
+        case RD_MODE_FITZHUGH_NAGUMO:
+            fitzHughNagumoShader.begin();
+            fitzHughNagumoShader.setUniform1f("passes", passes);
+            fitzHughNagumoShader.setUniform1f("a0", a0);
+            fitzHughNagumoShader.setUniform1f("a1", a1);
+            fitzHughNagumoShader.setUniform1f("epsilon", epsilon);
+            fitzHughNagumoShader.setUniform1f("delta", delta);
+            fitzHughNagumoShader.setUniform1f("k1", k1);
+            fitzHughNagumoShader.setUniform1f("k2", k2);
+            fitzHughNagumoShader.setUniform1f("k3", k3);
+            bufferFbo.draw(0, 0);
+            fitzHughNagumoShader.end();
+            break;
+        default:
+            break;
+    }
     sourceFbo.end();
     
     coloredFbo.begin();

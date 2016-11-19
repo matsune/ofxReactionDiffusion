@@ -23,6 +23,10 @@ void ofApp::keyPressed(int key){
         rd.clearSources();
     if (key == 'o')
         rd.clearObstacles();
+    if (key == 'g')
+        rd.setMode(RD_MODE_GRAYSCOTT);
+    if (key == 'f')
+        rd.setMode(RD_MODE_FITZHUGH_NAGUMO);
 }
 
 //--------------------------------------------------------------
