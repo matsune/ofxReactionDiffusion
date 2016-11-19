@@ -49,6 +49,7 @@ public:
     ofFloatColor getColor3() { return color3; }
     ofFloatColor getColor4() { return color4; }
     ofFloatColor getColor5() { return color5; }
+    
     /*
      Common Paramters
      */

@@ -12,18 +12,18 @@ ofxReactionDiffusion::ofxReactionDiffusion() {
     
     passes = 0.2;
     
-    a0      = 0.289062;
-    a1      = 0.177734;
-    epsilon = 1.152344;
-    delta   = 1.25;
-    k1      = 2.0996;
-    k2      = 0.083008;
-    k3      = 1.723;
-    
     feed = 0.0195;
     kill = 0.04;
     Du   = 0.25;
     Dv   = 0.195;
+    
+    a0      = 0.459184;
+    a1      = 0.780612;
+    epsilon = 0.642857;
+    delta   = 3.0;
+    k1      = 1.63776;
+    k2      = 0.336735;
+    k3      = 2.29592;
     
     alpha = 1.0;
     beta  = 1.0;
