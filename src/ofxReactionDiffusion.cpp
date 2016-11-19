@@ -21,7 +21,7 @@ ofxReactionDiffusion::ofxReactionDiffusion() {
     a1      = 0.780612;
     epsilon = 0.642857;
     delta   = 3.0;
-    k1      = 1.63776;
+    k1      = 1.63776;
     k2      = 0.336735;
     k3      = 2.29592;
     
