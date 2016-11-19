@@ -44,6 +44,11 @@ public:
     void setColor4Threshold(float _thresh) { color4.a = _thresh; }
     void setColor5Threshold(float _thresh) { color5.a = _thresh; }
     
+    ofFloatColor getColor1() { return color1; }
+    ofFloatColor getColor2() { return color2; }
+    ofFloatColor getColor3() { return color3; }
+    ofFloatColor getColor4() { return color4; }
+    ofFloatColor getColor5() { return color5; }
     /*
      Common Paramters
      */

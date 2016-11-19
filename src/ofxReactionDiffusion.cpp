@@ -172,21 +172,21 @@ ofxReactionDiffusion::ofxReactionDiffusion() {
                                           offset[7] = vec2(-1.0,  1.0);
                                           offset[8] = vec2( 1.0,  1.0);
 
-                                          vec3 current = texture2DRect(tex0, st).rgb;
+                                          vec3 source = vec3(0);
                                           for(int i=0; i<9; i++){
-                                              current += texture2DRect(tex0, st + offset[i]).rgb;
+                                              source += texture2DRect(tex0, st + offset[i]).rgb;
                                           }
-                                          current = current/9.0;
+                                          source /= 9.0;
 
-                                          float da = current.r * (alpha * gamma * current.g) - current.b;
-                                          float db = current.g * ((beta * current.b) - (alpha * current.r));
-                                          float dc = current.b * ((gamma * current.r) - (beta * current.g));
+                                          float a = source.r + source.r * ((alpha * (source.g * gamma)) - source.b) * passes;
+                                          float b = source.g + source.g * ((beta * source.b) - (alpha * source.r)) * passes;
+                                          float c = source.b + source.b * ((gamma * source.r) - (beta * source.g)) * passes;
                                           
-                                          current.r += da * passes;
-                                          current.g += db * passes;
-                                          current.b += dc * passes;
+                                          source.r = a;
+                                          source.g = b;
+                                          source.b = c;
                                           
-                                          gl_FragColor = vec4(current, 1.0);
+                                          gl_FragColor = vec4(source, 1.0);
                                       }
                                       );
     bzShader.unload();
@@ -320,7 +320,7 @@ void ofxReactionDiffusion::draw(int _x, int _y, float _width, float _height) {
 
 void ofxReactionDiffusion::addSource(int _x, int _y, float _radius) {
     sourceFbo.begin();
-    ofSetColor(0, 0, 220);
+    ofSetColor(100, 100, 120);
     ofDrawCircle(_x, _y, _radius);
     sourceFbo.end();
 }
