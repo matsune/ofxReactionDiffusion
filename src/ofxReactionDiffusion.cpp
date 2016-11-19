@@ -166,8 +166,11 @@ void ofxReactionDiffusion::update() {
     coloredFbo.end();
 }
 
-void ofxReactionDiffusion::draw() {
-    coloredFbo.draw(0, 0);
+void ofxReactionDiffusion::draw(int _x, int _y, float _width, float _height) {
+    if (_width < 0) _width = width;
+    if (_height < 0) _height = height;
+    
+    coloredFbo.draw(_x, _y, _width, _height);
 }
 
 void ofxReactionDiffusion::addSource(int _x, int _y, float _radius) {

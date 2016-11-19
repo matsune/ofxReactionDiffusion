@@ -16,7 +16,7 @@ public:
     ofxReactionDiffusion();
     void allocate(int _width, int _height);
     void update();
-    void draw();
+    void draw(int _x=0, int _y=0, float _width=-1, float _height=-1);
     
     void addSource(int _x, int _y, float _radius);
     void addObstacle(int _x, int _y, float _radius);
