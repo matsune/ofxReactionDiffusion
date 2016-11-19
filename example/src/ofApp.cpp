@@ -24,9 +24,11 @@ void ofApp::keyPressed(int key){
     if (key == 'o')
         rd.clearObstacles();
     if (key == 'g')
-        rd.setMode(RD_MODE_GRAYSCOTT);
+        rd.setMode(RD_MODE_GRAY_SCOTT);
     if (key == 'f')
         rd.setMode(RD_MODE_FITZHUGH_NAGUMO);
+    if (key == 'b')
+        rd.setMode(RD_MODE_BELOUSOV_ZHABOTINSKY);
 }
 
 //--------------------------------------------------------------

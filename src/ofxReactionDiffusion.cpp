@@ -8,7 +8,7 @@
 #include "ofxReactionDiffusion.h"
 
 ofxReactionDiffusion::ofxReactionDiffusion() {
-    mode = RD_MODE_GRAYSCOTT;
+    mode = RD_MODE_GRAY_SCOTT;
     passes = 0.2;
     
     a0 = 0.289062;
@@ -82,9 +82,9 @@ ofxReactionDiffusion::ofxReactionDiffusion() {
                                         gl_FragColor = vec4(clamp(u, 0.0, 1.0), 0, clamp(v, 0.0, 1.0), 1.0);
                                     }
                                 );
-    grayScottShader.unload();
-    grayScottShader.setupShaderFromSource(GL_FRAGMENT_SHADER, grayScott);
-    grayScottShader.linkProgram();
+    gsShader.unload();
+    gsShader.setupShaderFromSource(GL_FRAGMENT_SHADER, grayScott);
+    gsShader.linkProgram();
     
     string fitzHughNagumo = STRINGIFY(
                                       float kernel[9];
@@ -141,9 +141,53 @@ ofxReactionDiffusion::ofxReactionDiffusion() {
                                           gl_FragColor = vec4(clamp(u, 0.0, 1.0), 0, clamp(v, 0.0, 1.0), 1.0);
                                       }
                                     );
-    fitzHughNagumoShader.unload();
-    fitzHughNagumoShader.setupShaderFromSource(GL_FRAGMENT_SHADER, fitzHughNagumo);
-    fitzHughNagumoShader.linkProgram();
+    fhnShader.unload();
+    fhnShader.setupShaderFromSource(GL_FRAGMENT_SHADER, fitzHughNagumo);
+    fhnShader.linkProgram();
+    
+    string belousovZhabotinsky = STRINGIFY(
+                                      vec2 offset[9];
+                                      
+                                      uniform float passes;
+                                      uniform float alpha;
+                                      uniform float beta;
+                                      uniform float gamma;
+                                      uniform sampler2DRect tex0;
+                                      
+                                      void main(){
+                                          vec2 st = gl_TexCoord[0].st;
+                                          
+                                          offset[0] = vec2( 0.0, -1.0);
+                                          offset[1] = vec2(-1.0,  0.0);
+                                          offset[2] = vec2( 0.0,  0.0);
+                                          offset[3] = vec2( 1.0,  0.0);
+                                          offset[4] = vec2( 0.0,  1.0);
+                                          
+                                          offset[5] = vec2(-1.0, -1.0);
+                                          offset[6] = vec2( 1.0, -1.0);
+                                          offset[7] = vec2(-1.0,  1.0);
+                                          offset[8] = vec2( 1.0,  1.0);
+
+                                          vec3 current = texture2DRect(tex0, st).rgb;
+                                          for(int i=0; i<9; i++){
+                                              current += texture2DRect(tex0, st + offset[i]).rgb;
+                                          }
+                                          current = current/9.0;
+
+                                          float da = current.r * (alpha * gamma * current.g) - current.b;
+                                          float db = current.g * ((beta * current.b) - (alpha * current.r));
+                                          float dc = current.b * ((gamma * current.r) - (beta * current.g));
+                                          
+                                          current.r += da * passes;
+                                          current.g += db * passes;
+                                          current.b += dc * passes;
+                                          
+                                          gl_FragColor = vec4(current, 1.0);
+                                      }
+                                      );
+    bzShader.unload();
+    bzShader.setupShaderFromSource(GL_FRAGMENT_SHADER, belousovZhabotinsky);
+    bzShader.linkProgram();
     
     string coloringFragment = STRINGIFY(
                                    uniform vec4 color1;
@@ -214,28 +258,37 @@ void ofxReactionDiffusion::update() {
     
     sourceFbo.begin();
     switch (mode) {
-        case RD_MODE_GRAYSCOTT:
-            grayScottShader.begin();
-            grayScottShader.setUniform1f("passes", passes);
-            grayScottShader.setUniform1f("feed", feed);
-            grayScottShader.setUniform1f("kill", kill);
-            grayScottShader.setUniform1f("Du", Du);
-            grayScottShader.setUniform1f("Dv", Dv);
+        case RD_MODE_GRAY_SCOTT:
+            gsShader.begin();
+            gsShader.setUniform1f("passes", passes);
+            gsShader.setUniform1f("feed", feed);
+            gsShader.setUniform1f("kill", kill);
+            gsShader.setUniform1f("Du", Du);
+            gsShader.setUniform1f("Dv", Dv);
             bufferFbo.draw(0, 0);
-            grayScottShader.end();
+            gsShader.end();
             break;
         case RD_MODE_FITZHUGH_NAGUMO:
-            fitzHughNagumoShader.begin();
-            fitzHughNagumoShader.setUniform1f("passes", passes);
-            fitzHughNagumoShader.setUniform1f("a0", a0);
-            fitzHughNagumoShader.setUniform1f("a1", a1);
-            fitzHughNagumoShader.setUniform1f("epsilon", epsilon);
-            fitzHughNagumoShader.setUniform1f("delta", delta);
-            fitzHughNagumoShader.setUniform1f("k1", k1);
-            fitzHughNagumoShader.setUniform1f("k2", k2);
-            fitzHughNagumoShader.setUniform1f("k3", k3);
+            fhnShader.begin();
+            fhnShader.setUniform1f("passes", passes);
+            fhnShader.setUniform1f("a0", a0);
+            fhnShader.setUniform1f("a1", a1);
+            fhnShader.setUniform1f("epsilon", epsilon);
+            fhnShader.setUniform1f("delta", delta);
+            fhnShader.setUniform1f("k1", k1);
+            fhnShader.setUniform1f("k2", k2);
+            fhnShader.setUniform1f("k3", k3);
             bufferFbo.draw(0, 0);
-            fitzHughNagumoShader.end();
+            fhnShader.end();
+            break;
+        case RD_MODE_BELOUSOV_ZHABOTINSKY:
+            bzShader.begin();
+            bzShader.setUniform1f("passes", passes);
+            bzShader.setUniform1f("alpha", alpha);
+            bzShader.setUniform1f("beta", beta);
+            bzShader.setUniform1f("gamma", gamma);
+            bufferFbo.draw(0, 0);
+            bzShader.end();
             break;
         default:
             break;

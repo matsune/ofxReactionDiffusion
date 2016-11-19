@@ -11,8 +11,9 @@
 #define STRINGIFY(A) #A
 
 typedef enum {
-    RD_MODE_GRAYSCOTT,
+    RD_MODE_GRAY_SCOTT,
     RD_MODE_FITZHUGH_NAGUMO,
+    RD_MODE_BELOUSOV_ZHABOTINSKY
 } ReactionDiffusionMode;
 
 class ofxReactionDiffusion {
@@ -58,8 +59,12 @@ private:
     ofFbo bufferFbo;
     ofFbo coloredFbo;
     
-    ofShader grayScottShader;
-    ofShader fitzHughNagumoShader;
+    /// Gray-Scott
+    ofShader gsShader;
+    /// FitzHugh-Nagumo
+    ofShader fhnShader;
+    /// Belousov-Zhabotinsky
+    ofShader bzShader;
     ofShader coloringShader;
     
     ofFloatColor color1;
@@ -74,6 +79,14 @@ private:
     float passes;
     
     /*
+     Gray-Scott Parameters
+     */
+    float feed;
+    float kill;
+    float Du;
+    float Dv;
+    
+    /*
      FitzHugh-Nagumo Parameters
      */
     float a0;
@@ -85,10 +98,9 @@ private:
     float k3;
     
     /*
-     Gray-Scott Parameters
+     Belousov-Zhabotinsky Parameters
      */
-    float feed;
-    float kill;
-    float Du;
-    float Dv;
+    float alpha;
+    float beta;
+    float gamma;
 };
