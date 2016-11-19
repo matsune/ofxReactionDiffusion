@@ -242,9 +242,10 @@ ofxReactionDiffusion::ofxReactionDiffusion() {
     coloringShader.linkProgram();
 }
 
-void ofxReactionDiffusion::allocate(int _width, int _height) {
+void ofxReactionDiffusion::allocate(int _width, int _height, float _scale) {
     width = _width;
     height = _height;
+    scale = _scale;
     
     sourceFbo.allocate(_width, _height);
     bufferFbo.allocate(_width, _height);
@@ -301,14 +302,14 @@ void ofxReactionDiffusion::update() {
     sourceFbo.end();
     
     coloredFbo.begin();
-        coloringShader.begin();
-            coloringShader.setUniform4f("color1", color1.r, color1.g, color1.b, color1.a);
-            coloringShader.setUniform4f("color2", color2.r, color2.g, color2.b, color2.a);
-            coloringShader.setUniform4f("color3", color3.r, color3.g, color3.b, color3.a);
-            coloringShader.setUniform4f("color4", color4.r, color4.g, color4.b, color4.a);
-            coloringShader.setUniform4f("color5", color5.r, color5.g, color5.b, color5.a);
-            sourceFbo.draw(0, 0);
-        coloringShader.end();
+    coloringShader.begin();
+    coloringShader.setUniform4f("color1", color1.r, color1.g, color1.b, color1.a);
+    coloringShader.setUniform4f("color2", color2.r, color2.g, color2.b, color2.a);
+    coloringShader.setUniform4f("color3", color3.r, color3.g, color3.b, color3.a);
+    coloringShader.setUniform4f("color4", color4.r, color4.g, color4.b, color4.a);
+    coloringShader.setUniform4f("color5", color5.r, color5.g, color5.b, color5.a);
+    sourceFbo.draw(0, 0);
+    coloringShader.end();
     coloredFbo.end();
 }
 
@@ -316,20 +317,20 @@ void ofxReactionDiffusion::draw(int _x, int _y, float _width, float _height) {
     if (_width < 0) _width = width;
     if (_height < 0) _height = height;
     
-    coloredFbo.draw(_x, _y, _width, _height);
+    coloredFbo.draw(_x, _y, _width/scale, _height/scale);
 }
 
 void ofxReactionDiffusion::addSource(int _x, int _y, float _radius) {
     sourceFbo.begin();
     ofSetColor(100, 100, 120);
-    ofDrawCircle(_x, _y, _radius);
+    ofDrawCircle(_x * scale, _y * scale, _radius * scale);
     sourceFbo.end();
 }
 
 void ofxReactionDiffusion::addObstacle(int _x, int _y, float _radius) {
     obstacleFbo.begin();
     ofSetColor(255, 0, 0);
-    ofDrawCircle(_x, _y, _radius);
+    ofDrawCircle(_x * scale, _y * scale, _radius * scale);
     obstacleFbo.end();
 }
 

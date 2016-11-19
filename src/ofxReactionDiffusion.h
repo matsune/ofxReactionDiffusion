@@ -20,7 +20,7 @@ class ofxReactionDiffusion {
 
 public:
     ofxReactionDiffusion();
-    void allocate(int _width, int _height);
+    void allocate(int _width, int _height, float _scale=1.0);
     void update();
     void draw(int _x=0, int _y=0, float _width=-1, float _height=-1);
     
@@ -101,6 +101,7 @@ public:
     
 private:
     int width, height;
+    float scale;
     ReactionDiffusionMode mode;
     
     ofFbo sourceFbo;
