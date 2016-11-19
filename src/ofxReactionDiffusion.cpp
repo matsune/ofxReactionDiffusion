@@ -24,6 +24,10 @@ ofxReactionDiffusion::ofxReactionDiffusion() {
     Du = 0.25;
     Dv = 0.195;
     
+    alpha = 1.0;
+    beta = 1.0;
+    gamma = 1.0;
+    
     color1.set(0.0, 0.0, 0.0, 0.0);
     color2.set(0.0, 0.5, 0.0, 0.2);
     color3.set(0.0, 1.0, 0.0, 0.4);
