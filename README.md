@@ -23,14 +23,15 @@ You can switch drawing model by `void setMode(ReactionDiffusionMode _mode)` .
 
 Since each mode has its own parameters, it is necessary to use the parameters properly according to the mode being used.
 #### - Gray-Scott
-```
+```c++
 float feed;
 float kill;
 float Du;
 float Dv;
 ```
+
 #### - FitzHugh-Nagumo
-```
+```c++
 float a0;
 float a1;
 float epsilon;
@@ -39,8 +40,9 @@ float k1;
 float k2;
 float k3;
 ```
+
 #### - Belousov-Zhabotinsky
-```
+```c++
 float alpha;
 float beta;
 float gamma;
