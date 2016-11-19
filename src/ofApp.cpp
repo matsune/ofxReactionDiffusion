@@ -2,7 +2,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    rd.allocate(ofGetWidth(), ofGetHeight());
+    rd.allocate(ofGetWidth()/2, ofGetHeight()/2);
 }
 
 //--------------------------------------------------------------
@@ -20,6 +20,13 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 
+    if (key == 's') {
+        rd.clearSources();
+    } else if (key == 'o') {
+        rd.clearObstacles();
+    } else if (key == 'c') {
+        rd.clearAll();
+    }
 }
 
 //--------------------------------------------------------------
@@ -35,6 +42,11 @@ void ofApp::mouseMoved(int x, int y ){
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
 
+    if (button == 0) {
+        rd.addSource(x, y, 5);
+    } else {
+        rd.addObstacle(x, y, 5);
+    }
 }
 
 //--------------------------------------------------------------
