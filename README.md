@@ -17,7 +17,10 @@ Reaction-Diffusion System has a few mathematical models and ofxReactionDiffusion
 ### - Belousov-Zhabotinsky
 <img src="https://github.com/Ma-tsu-ne/ofxReactionDiffusion/blob/master/thumbnails/bz.jpg" width="500">
 
-## How to use
+## Installation
+Copy to `openFrameworks > addons`.
+
+## Usage
 Models are defined `ReactionDiffusionMode` .  
 You can switch drawing model by `void setMode(ReactionDiffusionMode _mode)` .
 
