@@ -13,7 +13,8 @@
 typedef enum {
     RD_MODE_GRAY_SCOTT,
     RD_MODE_FITZHUGH_NAGUMO,
-    RD_MODE_BELOUSOV_ZHABOTINSKY
+    RD_MODE_BELOUSOV_ZHABOTINSKY,
+    RD_MODE_WORM
 } ReactionDiffusionMode;
 
 class ofxReactionDiffusion {
@@ -100,6 +101,15 @@ public:
     float getBeta() { return beta; }
     float getGamma() { return gamma; }
     
+    /*
+     Worm
+     */
+    void setConstA(float _constA) { constA = _constA; }
+    void setConstB(float _constB) { constB = _constB; }
+    
+    void getConstA() { return constA; }
+    void getConstB() { return constB; }
+
 private:
     int width, height;
     float scale;
@@ -116,6 +126,9 @@ private:
     ofShader fhnShader;
     /// Belousov-Zhabotinsky
     ofShader bzShader;
+    /// Worm
+    ofShader wormShader;
+    
     ofShader coloringShader;
     
     ofFloatColor color1;
@@ -154,4 +167,10 @@ private:
     float alpha;
     float beta;
     float gamma;
+    
+    /*
+     Worm
+     */
+    float constA;
+    float constB;
 };

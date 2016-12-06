@@ -29,6 +29,8 @@ void ofApp::keyPressed(int key){
         rd.setMode(RD_MODE_FITZHUGH_NAGUMO);
     if (key == 'b')
         rd.setMode(RD_MODE_BELOUSOV_ZHABOTINSKY);
+    if (key == 'w')
+        rd.setMode(RD_MODE_WORM);
 }
 
 //--------------------------------------------------------------

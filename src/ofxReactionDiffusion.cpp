@@ -29,6 +29,9 @@ ofxReactionDiffusion::ofxReactionDiffusion() {
     beta  = 1.0;
     gamma = 1.0;
     
+    constA =  0.2;
+    constB = -0.7;
+    
     color1.set(   0.0,    0.0,    0.0, 0.0);
     color2.set(   0.0,  0.403, 0.6836, 0.2);
     color3.set(0.7857, 0.0816, 0.7347, 0.4);
@@ -194,6 +197,59 @@ ofxReactionDiffusion::ofxReactionDiffusion() {
     bzShader.setupShaderFromSource(GL_FRAGMENT_SHADER, belousovZhabotinsky);
     bzShader.linkProgram();
     
+    string wormFragment = STRINGIFY(
+                                    float kernel[9];
+                                    vec2 offset[9];
+
+                                    uniform float passes;
+                                    uniform float constA;
+                                    uniform float constB;
+                                    uniform sampler2DRect tex0;
+                                       
+                                    void main(){
+                                        vec2 st = gl_TexCoord[0].st;
+                                        
+                                        offset[0] = vec2( 0.0, -1.0);
+                                        offset[1] = vec2(-1.0,  0.0);
+                                        offset[2] = vec2( 0.0,  0.0);
+                                        offset[3] = vec2( 1.0,  0.0);
+                                        offset[4] = vec2( 0.0,  1.0);
+                                        
+                                        offset[5] = vec2(-1.0, -1.0);
+                                        offset[6] = vec2( 1.0, -1.0);
+                                        offset[7] = vec2(-1.0,  1.0);
+                                        offset[8] = vec2( 1.0,  1.0);
+                                        
+                                        kernel[0] = 1.0;
+                                        kernel[1] = 1.0;
+                                        kernel[2] = -6.82842712;
+                                        kernel[3] = 1.0;
+                                        kernel[4] = 1.0;
+                                        
+                                        kernel[5] = 0.707106781;
+                                        kernel[6] = 0.707106781;
+                                        kernel[7] = 0.707106781;
+                                        kernel[8] = 0.707106781;
+                                        
+                                        vec2 lap = vec2(0.0, 0.0);
+                                        for(int i=0; i<9; i++){
+                                            vec2 tmp = texture2DRect(tex0, st + offset[i]).rb;
+                                            lap += tmp * kernel[i];
+                                        }
+                                        
+                                        float a = texture2DRect(tex0, st).r;
+                                        float b = texture2DRect(tex0, st).b;
+                                        float da = constA * (a * a - b * b) + lap.y;
+                                        float db = constB * (2.0 * a * b) - lap.x;
+                                        a += da * passes;
+                                        b += db * passes;
+                                        gl_FragColor = vec4(clamp(a, 0.0, 1.0), 0, clamp(b, 0.0, 1.0), 1.0);
+                                    }
+                                    );
+    wormShader.unload();
+    wormShader.setupShaderFromSource(GL_FRAGMENT_SHADER, wormFragment);
+    wormShader.linkProgram();
+    
     string coloringFragment = STRINGIFY(
                                    uniform vec4 color1;
                                    uniform vec4 color2;
@@ -295,6 +351,14 @@ void ofxReactionDiffusion::update() {
             bzShader.setUniform1f("gamma", gamma);
             bufferFbo.draw(0, 0);
             bzShader.end();
+            break;
+        case RD_MODE_WORM:
+            wormShader.begin();
+            fhnShader.setUniform1f("passes", passes);
+            wormShader.setUniform1f("constA", constA);
+            wormShader.setUniform1f("constB", constB);
+            bufferFbo.draw(0, 0);
+            wormShader.end();
             break;
         default:
             break;
