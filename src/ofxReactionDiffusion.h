@@ -13,8 +13,7 @@
 typedef enum {
     RD_MODE_GRAY_SCOTT,
     RD_MODE_FITZHUGH_NAGUMO,
-    RD_MODE_BELOUSOV_ZHABOTINSKY,
-    RD_MODE_WORM
+    RD_MODE_BELOUSOV_ZHABOTINSKY
 } ReactionDiffusionMode;
 
 class ofxReactionDiffusion {
@@ -33,11 +32,31 @@ public:
     void clearObstacles();
     void clearAll();
 
-    void setColor1(float _r, float _g, float _b) { color1.r = _r; color1.g = _g; color1.b = _b; }
-    void setColor2(float _r, float _g, float _b) { color2.r = _r; color2.g = _g; color2.b = _b; }
-    void setColor3(float _r, float _g, float _b) { color3.r = _r; color3.g = _g; color3.b = _b; }
-    void setColor4(float _r, float _g, float _b) { color4.r = _r; color4.g = _g; color4.b = _b; }
-    void setColor5(float _r, float _g, float _b) { color5.r = _r; color5.g = _g; color5.b = _b; }
+    void setColor1(ofFloatColor _color) {
+        color1.r = _color.r;
+        color1.g = _color.g;
+        color1.b = _color.b;
+    }
+    void setColor2(ofFloatColor _color) {
+        color2.r = _color.r;
+        color2.g = _color.g;
+        color2.b = _color.b;
+    }
+    void setColor3(ofFloatColor _color) {
+        color3.r = _color.r;
+        color3.g = _color.g;
+        color3.b = _color.b;
+    }
+    void setColor4(ofFloatColor _color) {
+        color4.r = _color.r;
+        color4.g = _color.g;
+        color4.b = _color.b;
+    }
+    void setColor5(ofFloatColor _color) {
+        color5.r = _color.r;
+        color5.g = _color.g;
+        color5.b = _color.b;
+    }
     
     void setColor1Threshold(float _thresh) { color1.a = _thresh; }
     void setColor2Threshold(float _thresh) { color2.a = _thresh; }
@@ -71,6 +90,13 @@ public:
     float getDu() { return Du; }
     float getDv() { return Dv; }
     
+    void setGrayScottParams(float _feed, float _kill, float _Du, float _Dv) {
+        setFeed(_feed);
+        setKill(_kill);
+        setDu(_Du);
+        setDv(_Dv);
+    }
+
     /*
      FitzHugh-Nagumo
      */
@@ -90,6 +116,15 @@ public:
     float getK2() { return k2; }
     float getK3() { return k3; }
     
+    void setFhnParams(float _a0, float _a1, float _epsilon, float _delta, float _k1, float _k2, float _k3) {
+        setA0(_a0);
+        setA1(_a1);
+        setEpsilon(_epsilon);
+        setDelta(_delta);
+        setK1(_k1);
+        setK2(_k2);
+        setK3(_k3);
+    }
     /*
      Belousov-Zhabotinsky
      */
@@ -101,14 +136,11 @@ public:
     float getBeta() { return beta; }
     float getGamma() { return gamma; }
     
-    /*
-     Worm
-     */
-    void setConstA(float _constA) { constA = _constA; }
-    void setConstB(float _constB) { constB = _constB; }
-    
-    void getConstA() { return constA; }
-    void getConstB() { return constB; }
+    void setBzParams(float _alpha, float _beta, float _gamma) {
+        setAlpha(_alpha);
+        setBeta(_beta);
+        setGamma(_gamma);
+    }
 
 private:
     int width, height;
@@ -126,8 +158,6 @@ private:
     ofShader fhnShader;
     /// Belousov-Zhabotinsky
     ofShader bzShader;
-    /// Worm
-    ofShader wormShader;
     
     ofShader coloringShader;
     
@@ -167,10 +197,4 @@ private:
     float alpha;
     float beta;
     float gamma;
-    
-    /*
-     Worm
-     */
-    float constA;
-    float constB;
 };

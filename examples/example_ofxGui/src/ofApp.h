@@ -1,6 +1,8 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxGui.h"
+#include "ofxReactionDiffusion.h"
 
 class ofApp : public ofBaseApp{
 
@@ -21,4 +23,26 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		
+    ofxReactionDiffusion rd;
+    
+    
+    ofxPanel gui;
+    ofxIntSlider mode;
+    ofxFloatSlider passes;
+    
+    ofxGuiGroup gs;
+    ofxFloatSlider feed, kill, Du, Dv;
+    
+    ofxGuiGroup fhn;
+    ofxFloatSlider a0, a1, epsilon, delta, k1, k2, k3;
+    
+    ofxGuiGroup bz;
+    ofxFloatSlider alpha, beta, gamma;
+    
+    ofxGuiGroup worm;
+    ofxFloatSlider constA, constB;
+    
+    ofxPanel colors;
+    ofxFloatColorSlider color1, color2, color3, color4, color5;
+    ofxFloatSlider thresh1, thresh2, thresh3, thresh4, thresh5;
 };
