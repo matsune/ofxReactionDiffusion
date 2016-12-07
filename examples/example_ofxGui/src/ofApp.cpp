@@ -31,9 +31,9 @@ void ofApp::setup(){
     
     gui.add(bz.setup());
     bz.setName("Belousov Zhabotinsky");
-    bz.add(alpha.setup("Alpha", rd.getAlpha(), 0, 1.0));
-    bz.add(beta.setup("Beta", rd.getBeta(), 0, 1.0));
-    bz.add(gamma.setup("Gamma", rd.getGamma(), 0, 1.0));
+    bz.add(alpha.setup("Alpha", rd.getAlpha(), -5.0, 5.0));
+    bz.add(beta.setup("Beta", rd.getBeta(), -5.0, 5.0));
+    bz.add(gamma.setup("Gamma", rd.getGamma(), -5.0, 5.0));
     
     colors.setup();
     colors.setPosition(ofGetWidth() - colors.getWidth(), 0);
@@ -48,6 +48,12 @@ void ofApp::setup(){
     colors.add(thresh4.setup("Thresh 4", 0.6 , 0, 1.0));
     colors.add(color5.setup("Color 5", 1.0 , 0, 1.0));
     colors.add(thresh5.setup("Thresh 5", 0.8 , 0, 1.0));
+    
+    color1 = rd.getColor1();
+    color2 = rd.getColor2();
+    color3 = rd.getColor3();
+    color4 = rd.getColor4();
+    color5 = rd.getColor5();
 }
 
 //--------------------------------------------------------------
