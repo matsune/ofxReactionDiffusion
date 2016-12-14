@@ -10,12 +10,12 @@
 ofxReactionDiffusion::ofxReactionDiffusion() {
     mode = RD_MODE_GRAY_SCOTT;
     
-    passes = 0.2;
+    passes = 1.0;
     
-    feed = 0.0195;
-    kill = 0.04;
-    Du   = 0.25;
-    Dv   = 0.195;
+    feed = 0.037;
+    kill = 0.06;
+    Du   = 0.21;
+    Dv   = 0.105;
     
     a0      = 0.459184;
     a1      = 0.780612;
@@ -36,55 +36,32 @@ ofxReactionDiffusion::ofxReactionDiffusion() {
     color5.set(  0.02,   0.78,  0.918, 0.8);
     
     string grayScott = STRINGIFY(
-                                    float kernel[9];
-                                    vec2 offset[9];
-                                    
+                                 uniform float screenWidth;
+                                 uniform float screenHeight;
                                     uniform float passes;
                                     uniform float feed;
                                     uniform float kill;
                                     uniform float Du;
                                     uniform float Dv;
                                     uniform sampler2DRect tex0;
-                                    
+                                 
+                                 float step_x = 0.5;
+                                 float step_y = 0.5;
                                     void main(){
-                                        vec2 st = gl_TexCoord[0].st;
+                                        vec2 vUv = gl_TexCoord[0].st;
+                                        vec2 uv = texture2DRect(tex0, vUv).rb;
+                                        vec2 uv0 = texture2DRect(tex0, vUv+vec2(-step_x, 0.0)).rb;
+                                        vec2 uv1 = texture2DRect(tex0, vUv+vec2(step_x, 0.0)).rb;
+                                        vec2 uv2 = texture2DRect(tex0, vUv+vec2(0.0, -step_y)).rb;
+                                        vec2 uv3 = texture2DRect(tex0, vUv+vec2(0.0, step_y)).rb;
+                                    
                                         
-                                        offset[0] = vec2( 0.0, -1.0);
-                                        offset[1] = vec2(-1.0,  0.0);
-                                        offset[2] = vec2( 0.0,  0.0);
-                                        offset[3] = vec2( 1.0,  0.0);
-                                        offset[4] = vec2( 0.0,  1.0);
+                                        vec2 lapl = uv0 + uv1 + uv2 + uv3 - 4.0*uv;//10485.76;
+                                        float du = Du*lapl.r - uv.r*uv.g*uv.g + feed*(1.0 - uv.r);
+                                        float dv = Dv*lapl.g + uv.r*uv.g*uv.g - (feed+kill)*uv.g;
+                                        vec2 dst = uv + passes*vec2(du, dv);
                                         
-                                        offset[5] = vec2(-1.0, -1.0);
-                                        offset[6] = vec2( 1.0, -1.0);
-                                        offset[7] = vec2(-1.0,  1.0);
-                                        offset[8] = vec2( 1.0,  1.0);
-                                        
-                                        kernel[0] = 1.0;
-                                        kernel[1] = 1.0;
-                                        kernel[2] = -6.82842712;
-                                        kernel[3] = 1.0;
-                                        kernel[4] = 1.0;
-                                        
-                                        kernel[5] = 0.707106781;
-                                        kernel[6] = 0.707106781;
-                                        kernel[7] = 0.707106781;
-                                        kernel[8] = 0.707106781;
-                                        
-                                        vec2 lap = vec2(0.0, 0.0);
-                                        for(int i=0; i<9; i++){
-                                            vec2 tmp = texture2DRect(tex0, st + offset[i]).rb;
-                                            lap += tmp * kernel[i];
-                                        }
-                                        
-                                        float u = texture2DRect(tex0, st).r;
-                                        float v = texture2DRect(tex0, st).b;
-                                        float uvv = u*v*v;
-                                        float du = Du * lap.x - uvv + feed * (1.0 - u);
-                                        float dv = Dv * lap.y + uvv - (feed + kill)*v;
-                                        u += du * passes;
-                                        v += dv * passes;
-                                        gl_FragColor = vec4(clamp(u, 0.0, 1.0), 0, clamp(v, 0.0, 1.0), 1.0);
+                                        gl_FragColor = vec4(dst.r, 0.0, dst.g, 1.0);;
                                     }
                                 );
     gsShader.unload();
@@ -266,6 +243,8 @@ void ofxReactionDiffusion::update() {
     switch (mode) {
         case RD_MODE_GRAY_SCOTT:
             gsShader.begin();
+            gsShader.setUniform1f("screenWidth", ofGetWidth());
+            gsShader.setUniform1f("screenHeight", ofGetHeight());
             gsShader.setUniform1f("passes", passes);
             gsShader.setUniform1f("feed", feed);
             gsShader.setUniform1f("kill", kill);
@@ -316,7 +295,8 @@ void ofxReactionDiffusion::update() {
 void ofxReactionDiffusion::draw(int _x, int _y, float _width, float _height) {
     if (_width < 0) _width = width;
     if (_height < 0) _height = height;
-    
+
+//    sourceFbo.draw(_x, _y, _width/scale, _height/scale);
     coloredFbo.draw(_x, _y, _width/scale, _height/scale);
 }
 

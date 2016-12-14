@@ -10,14 +10,16 @@ void ofApp::setup(){
     gui.setup();
     gui.setName("Parameters");
     gui.add(mode.setup("Mode", 0, 0, 2));
-    gui.add(passes.setup("Passes", rd.getPasses(), 0.01, 1.5));
+    gui.add(passes.setup("Passes", rd.getPasses(), 0.01, 2));
+    gui.add(clearButton.setup("Clear"));
+    clearButton.addListener(this, &ofApp::clear);
 
     gui.add(gs.setup());
     gs.setName("Gray Scott");
-    gs.add(feed.setup("Feed", rd.getFeed(), 0, 1.0));
-    gs.add(kill.setup("Kill", rd.getKill(), 0, 1.0));
-    gs.add(Du.setup("Du", rd.getDu(), 0, 1.0));
-    gs.add(Dv.setup("Dv", rd.getDv(), 0, 1.0));
+    gs.add(feed.setup("Feed", rd.getFeed(), 0, 0.5));
+    gs.add(kill.setup("Kill", rd.getKill(), 0, 0.5));
+    gs.add(Du.setup("Du", rd.getDu(), 0, 0.5));
+    gs.add(Dv.setup("Dv", rd.getDv(), 0, 0.5));
     
     gui.add(fhn.setup());
     fhn.setName("Fitz-Hugh Nagumo");
@@ -54,6 +56,10 @@ void ofApp::setup(){
     color3 = rd.getColor3();
     color4 = rd.getColor4();
     color5 = rd.getColor5();
+}
+
+void ofApp::clear() {
+    rd.clearAll();
 }
 
 //--------------------------------------------------------------

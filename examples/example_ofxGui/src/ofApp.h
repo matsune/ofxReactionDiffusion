@@ -23,12 +23,15 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		
+    void clear();
+    
     ofxReactionDiffusion rd;
     
     
     ofxPanel gui;
     ofxIntSlider mode;
     ofxFloatSlider passes;
+    ofxButton clearButton;
     
     ofxGuiGroup gs;
     ofxFloatSlider feed, kill, Du, Dv;
