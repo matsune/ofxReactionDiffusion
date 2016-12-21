@@ -52,6 +52,7 @@
 
 /* Begin PBXFileReference section */
 		0F64C7E2A2802A2CE6079B69 /* ofxReactionDiffusion.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxReactionDiffusion.cpp; path = ../../../../addons/ofxReactionDiffusion/src/ofxReactionDiffusion.cpp; sourceTree = SOURCE_ROOT; };
+		13308FAE1E0AD17D00F3477E /* PingPong.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PingPong.h; sourceTree = "<group>"; };
 		27CE0445D02D803853EC74E8 /* ofxPanel.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxPanel.cpp; path = ../../../../addons/ofxGui/src/ofxPanel.cpp; sourceTree = SOURCE_ROOT; };
 		44C0961009D36089EBA9C36F /* ofxGuiGroup.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxGuiGroup.h; path = ../../../../addons/ofxGui/src/ofxGuiGroup.h; sourceTree = SOURCE_ROOT; };
 		481083C90D96C0AAA580E194 /* ofxButton.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxButton.h; path = ../../../../addons/ofxGui/src/ofxButton.h; sourceTree = SOURCE_ROOT; };
@@ -95,6 +96,7 @@
 		12BA66A1958C3B17CF449C43 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				13308FAE1E0AD17D00F3477E /* PingPong.h */,
 				0F64C7E2A2802A2CE6079B69 /* ofxReactionDiffusion.cpp */,
 				F4CAC834D4B9076DC504621D /* ofxReactionDiffusion.h */,
 			);

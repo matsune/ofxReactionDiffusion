@@ -99,9 +99,10 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-
     rd.draw();
+    
     gui.draw();
+    
     colors.draw();
 }
 
@@ -122,9 +123,10 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-
     if (button == 0) {
         rd.addSource(x, y, 5);
+    } else if (button == 2) {
+        rd.addObstacle(x, y, 5);
     }
 }
 

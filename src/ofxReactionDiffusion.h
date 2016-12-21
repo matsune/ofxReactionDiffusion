@@ -7,6 +7,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "PingPong.h"
 
 #define STRINGIFY(A) #A
 
@@ -147,10 +148,9 @@ private:
     float scale;
     ReactionDiffusionMode mode;
     
-    ofFbo sourceFbo;
-    ofFbo obstacleFbo;
-    ofFbo bufferFbo;
-    ofFbo coloredFbo;
+    PingPong srcPingPong;
+    PingPong obstaclePingPong;
+    PingPong renderPingPong;
     
     /// Gray-Scott
     ofShader gsShader;

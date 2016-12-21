@@ -36,34 +36,55 @@ ofxReactionDiffusion::ofxReactionDiffusion() {
     color5.set(  0.02,   0.78,  0.918, 0.8);
     
     string grayScott = STRINGIFY(
-                                 uniform float screenWidth;
-                                 uniform float screenHeight;
-                                    uniform float passes;
-                                    uniform float feed;
-                                    uniform float kill;
-                                    uniform float Du;
-                                    uniform float Dv;
-                                    uniform sampler2DRect tex0;
+                                 float kernel[9];
+                                 vec2 offset[9];
                                  
-                                 float step_x = 0.5;
-                                 float step_y = 0.5;
-                                    void main(){
-                                        vec2 vUv = gl_TexCoord[0].st;
-                                        vec2 uv = texture2DRect(tex0, vUv).rb;
-                                        vec2 uv0 = texture2DRect(tex0, vUv+vec2(-step_x, 0.0)).rb;
-                                        vec2 uv1 = texture2DRect(tex0, vUv+vec2(step_x, 0.0)).rb;
-                                        vec2 uv2 = texture2DRect(tex0, vUv+vec2(0.0, -step_y)).rb;
-                                        vec2 uv3 = texture2DRect(tex0, vUv+vec2(0.0, step_y)).rb;
-                                    
+                                 uniform float passes;
+                                 uniform float feed;
+                                 uniform float kill;
+                                 uniform float Du;
+                                 uniform float Dv;
+                                 uniform sampler2DRect tex0;
+                                 
+                                 void main(){
+                                     vec2 st = gl_TexCoord[0].st;
+                                     
+                                     offset[0] = vec2( 0.0, -1.0);
+                                     offset[1] = vec2(-1.0,  0.0);
+                                     offset[2] = vec2( 0.0,  0.0);
+                                     offset[3] = vec2( 1.0,  0.0);
+                                     offset[4] = vec2( 0.0,  1.0);
+                                     
+                                     offset[5] = vec2(-1.0, -1.0);
+                                     offset[6] = vec2( 1.0, -1.0);
+                                     offset[7] = vec2(-1.0,  1.0);
+                                     offset[8] = vec2( 1.0,  1.0);
+                                     
+                                     kernel[0] = 1.0;
+                                     kernel[1] = 1.0;
+                                     kernel[2] = -6.82842712;
+                                     kernel[3] = 1.0;
+                                     kernel[4] = 1.0;
+                                     
+                                     kernel[5] = 0.707106781;
+                                     kernel[6] = 0.707106781;
+                                     kernel[7] = 0.707106781;
+                                     kernel[8] = 0.707106781;
+                                     
+                                     vec2 lap = vec2(0.0, 0.0);
+                                     for(int i=0; i<9; i++){
+                                         vec2 tmp = texture2DRect(tex0, st + offset[i]).rb;
+                                         lap += tmp * kernel[i];
+                                     }
+                                     
+                                     vec2 uv = texture2DRect(tex0, st).rb;
+                                     float du = Du*lap.r - uv.r*uv.g*uv.g + feed*(1.0 - uv.r);
+                                     float dv = Dv*lap.g + uv.r*uv.g*uv.g - (feed+kill)*uv.g;
+                                     vec2 dst = uv + passes*vec2(du, dv);
                                         
-                                        vec2 lapl = uv0 + uv1 + uv2 + uv3 - 4.0*uv;//10485.76;
-                                        float du = Du*lapl.r - uv.r*uv.g*uv.g + feed*(1.0 - uv.r);
-                                        float dv = Dv*lapl.g + uv.r*uv.g*uv.g - (feed+kill)*uv.g;
-                                        vec2 dst = uv + passes*vec2(du, dv);
-                                        
-                                        gl_FragColor = vec4(dst.r, 0.0, dst.g, 1.0);;
+                                     gl_FragColor = vec4(dst.r, 0.0, dst.g, 1.0);;
                                     }
-                                );
+                                 );
     gsShader.unload();
     gsShader.setupShaderFromSource(GL_FRAGMENT_SHADER, grayScott);
     gsShader.linkProgram();
@@ -121,99 +142,100 @@ ofxReactionDiffusion::ofxReactionDiffusion() {
                                           u += du * passes * 0.1;
                                           v += dv * passes * 0.1;
                                           gl_FragColor = vec4(clamp(u, 0.0, 1.0), 0, clamp(v, 0.0, 1.0), 1.0);
-                                      }
-                                    );
+                                        }
+                                      );
     fhnShader.unload();
     fhnShader.setupShaderFromSource(GL_FRAGMENT_SHADER, fitzHughNagumo);
     fhnShader.linkProgram();
     
     string belousovZhabotinsky = STRINGIFY(
-                                      vec2 offset[9];
+                                           vec2 offset[9];
                                       
-                                      uniform float passes;
-                                      uniform float alpha;
-                                      uniform float beta;
-                                      uniform float gamma;
-                                      uniform sampler2DRect tex0;
-                                      
-                                      void main(){
-                                          vec2 st = gl_TexCoord[0].st;
+                                           uniform float passes;
+                                           uniform float alpha;
+                                           uniform float beta;
+                                           uniform float gamma;
+                                           uniform sampler2DRect tex0;
                                           
-                                          offset[0] = vec2( 0.0, -1.0);
-                                          offset[1] = vec2(-1.0,  0.0);
-                                          offset[2] = vec2( 0.0,  0.0);
-                                          offset[3] = vec2( 1.0,  0.0);
-                                          offset[4] = vec2( 0.0,  1.0);
-                                          
-                                          offset[5] = vec2(-1.0, -1.0);
-                                          offset[6] = vec2( 1.0, -1.0);
-                                          offset[7] = vec2(-1.0,  1.0);
-                                          offset[8] = vec2( 1.0,  1.0);
-
-                                          vec3 source = vec3(0);
-                                          for(int i=0; i<9; i++){
-                                              source += texture2DRect(tex0, st + offset[i]).rgb;
-                                          }
-                                          source /= 9.0;
-
-                                          float a = source.r + source.r * ((alpha * (source.g * gamma)) - source.b) * passes;
-                                          float b = source.g + source.g * ((beta * source.b) - (alpha * source.r)) * passes;
-                                          float c = source.b + source.b * ((gamma * source.r) - (beta * source.g)) * passes;
-                                          
-                                          source.r = a;
-                                          source.g = b;
-                                          source.b = c;
-                                          
-                                          gl_FragColor = vec4(source, 1.0);
-                                      }
-                                      );
+                                           void main(){
+                                               vec2 st = gl_TexCoord[0].st;
+                                              
+                                               offset[0] = vec2( 0.0, -1.0);
+                                               offset[1] = vec2(-1.0,  0.0);
+                                               offset[2] = vec2( 0.0,  0.0);
+                                               offset[3] = vec2( 1.0,  0.0);
+                                               offset[4] = vec2( 0.0,  1.0);
+                                               
+                                               offset[5] = vec2(-1.0, -1.0);
+                                               offset[6] = vec2( 1.0, -1.0);
+                                               offset[7] = vec2(-1.0,  1.0);
+                                               offset[8] = vec2( 1.0,  1.0);
+ 
+                                               vec3 source = vec3(0);
+                                               for(int i=0; i<9; i++){
+                                                   source += texture2DRect(tex0, st + offset[i]).rgb;
+                                               }
+                                               source /= 9.0;
+ 
+                                               float a = source.r + source.r * ((alpha * (source.g * gamma)) - source.b) * passes;
+                                               float b = source.g + source.g * ((beta * source.b) - (alpha * source.r)) * passes;
+                                               float c = source.b + source.b * ((gamma * source.r) - (beta * source.g)) * passes;
+                                              
+                                               source.r = a;
+                                               source.g = b;
+                                               source.b = c;
+                                              
+                                               gl_FragColor = vec4(source, 1.0);
+                                            }
+                                           );
     bzShader.unload();
     bzShader.setupShaderFromSource(GL_FRAGMENT_SHADER, belousovZhabotinsky);
     bzShader.linkProgram();
     
     string coloringFragment = STRINGIFY(
-                                   uniform vec4 color1;
-                                   uniform vec4 color2;
-                                   uniform vec4 color3;
-                                   uniform vec4 color4;
-                                   uniform vec4 color5;
-                                   uniform sampler2DRect tex0;
+                                        uniform vec4 color1;
+                                        uniform vec4 color2;
+                                        uniform vec4 color3;
+                                        uniform vec4 color4;
+                                        uniform vec4 color5;
+                                        uniform sampler2DRect tex0;
                                    
-                                   void main(){
-                                       vec2 st = gl_TexCoord[0].st;
+                                        void main(){
+                                            vec2 st = gl_TexCoord[0].st;
                                        
-                                       float value = texture2DRect(tex0, st).b;
-                                       float a;
-                                       vec3 col;
+                                            float value = texture2DRect(tex0, st).b;
+                                            float a;
+                                            vec3 col;
                                        
-                                       if(value <= color1.a)
-                                           col = color1.rgb;
-                                       if(value > color1.a && value <= color2.a)
-                                       {
-                                           a = (value-color1.a)/(color2.a-color1.a);
-                                           col = mix(color1.rgb, color2.rgb, a);
-                                       }
-                                       if(value > color2.a && value <= color3.a)
-                                       {
-                                           a = (value-color2.a)/(color3.a-color2.a);
-                                           col = mix(color2.rgb, color3.rgb, a);
-                                       }
-                                       if(value > color3.a && value <= color4.a)
-                                       {
-                                           a = (value-color3.a)/(color4.a-color3.a);
-                                           col = mix(color3.rgb, color4.rgb, a);
-                                       }
-                                       if(value > color4.a && value <= color5.a)
-                                       {
-                                           a = (value - color4.a)/(color5.a - color4.a);
-                                           col = mix(color4.rgb, color5.rgb, a);
-                                       }
-                                       if(value > color5.a)
-                                           col = color5.rgb;
+                                            if(value <= color1.a)
+                                                col = color1.rgb;
+                                            
+                                            if(value > color1.a && value <= color2.a) {
+                                                a = (value-color1.a)/(color2.a-color1.a);
+                                                col = mix(color1.rgb, color2.rgb, a);
+                                            }
+                                            
+                                            if(value > color2.a && value <= color3.a) {
+                                                a = (value-color2.a)/(color3.a-color2.a);
+                                                col = mix(color2.rgb, color3.rgb, a);
+                                            }
+                                            
+                                            if(value > color3.a && value <= color4.a) {
+                                                a = (value-color3.a)/(color4.a-color3.a);
+                                                col = mix(color3.rgb, color4.rgb, a);
+                                            }
+                                            
+                                            if(value > color4.a && value <= color5.a) {
+                                                a = (value - color4.a)/(color5.a - color4.a);
+                                                col = mix(color4.rgb, color5.rgb, a);
+                                            }
+                                            
+                                            if(value > color5.a)
+                                                col = color5.rgb;
                                        
-                                       gl_FragColor = vec4(col,1.0);
-                                   }
-                               );
+                                            gl_FragColor = vec4(col,1.0);
+                                        }
+                                    );
     coloringShader.unload();
     coloringShader.setupShaderFromSource(GL_FRAGMENT_SHADER, coloringFragment);
     coloringShader.linkProgram();
@@ -224,22 +246,24 @@ void ofxReactionDiffusion::allocate(int _width, int _height, float _scale) {
     height = _height;
     scale = _scale;
     
-    sourceFbo.allocate(_width, _height);
-    bufferFbo.allocate(_width, _height);
-    obstacleFbo.allocate(_width, _height);
-    coloredFbo.allocate(_width, _height);
+    srcPingPong.allocate(_width, _height);
+    obstaclePingPong.allocate(_width, _height);
+    renderPingPong.allocate(_width, _height);
 
     clearAll();
 }
 
 
 void ofxReactionDiffusion::update() {
-    bufferFbo.begin();
-    sourceFbo.draw(0, 0);
-    obstacleFbo.draw(0, 0);
-    bufferFbo.end();
+    srcPingPong.dst->begin();
+    srcPingPong.src->draw(0, 0);
+    obstaclePingPong.src->draw(0, 0);
+    srcPingPong.dst->end();
     
-    sourceFbo.begin();
+    srcPingPong.swap();
+    
+    
+    srcPingPong.dst->begin();
     switch (mode) {
         case RD_MODE_GRAY_SCOTT:
             gsShader.begin();
@@ -250,7 +274,7 @@ void ofxReactionDiffusion::update() {
             gsShader.setUniform1f("kill", kill);
             gsShader.setUniform1f("Du", Du);
             gsShader.setUniform1f("Dv", Dv);
-            bufferFbo.draw(0, 0);
+            srcPingPong.src->draw(0, 0);
             gsShader.end();
             break;
         case RD_MODE_FITZHUGH_NAGUMO:
@@ -263,7 +287,7 @@ void ofxReactionDiffusion::update() {
             fhnShader.setUniform1f("k1", k1);
             fhnShader.setUniform1f("k2", k2);
             fhnShader.setUniform1f("k3", k3);
-            bufferFbo.draw(0, 0);
+            srcPingPong.src->draw(0, 0);
             fhnShader.end();
             break;
         case RD_MODE_BELOUSOV_ZHABOTINSKY:
@@ -272,58 +296,60 @@ void ofxReactionDiffusion::update() {
             bzShader.setUniform1f("alpha", alpha);
             bzShader.setUniform1f("beta", beta);
             bzShader.setUniform1f("gamma", gamma);
-            bufferFbo.draw(0, 0);
+            srcPingPong.src->draw(0, 0);
             bzShader.end();
             break;
         default:
             break;
     }
-    sourceFbo.end();
-    
-    coloredFbo.begin();
+    srcPingPong.dst->end();
+    srcPingPong.swap();
+
+    renderPingPong.dst->begin();
     coloringShader.begin();
     coloringShader.setUniform4f("color1", color1.r, color1.g, color1.b, color1.a);
     coloringShader.setUniform4f("color2", color2.r, color2.g, color2.b, color2.a);
     coloringShader.setUniform4f("color3", color3.r, color3.g, color3.b, color3.a);
     coloringShader.setUniform4f("color4", color4.r, color4.g, color4.b, color4.a);
     coloringShader.setUniform4f("color5", color5.r, color5.g, color5.b, color5.a);
-    sourceFbo.draw(0, 0);
+    srcPingPong.src->draw(0, 0);
     coloringShader.end();
-    coloredFbo.end();
+    renderPingPong.dst->end();
+    
+    renderPingPong.swap();
 }
 
 void ofxReactionDiffusion::draw(int _x, int _y, float _width, float _height) {
     if (_width < 0) _width = width;
     if (_height < 0) _height = height;
 
-//    sourceFbo.draw(_x, _y, _width/scale, _height/scale);
-    coloredFbo.draw(_x, _y, _width/scale, _height/scale);
+    renderPingPong.src->draw(_x, _y, _width/scale, _height/scale);
 }
 
 void ofxReactionDiffusion::addSource(int _x, int _y, float _radius) {
-    sourceFbo.begin();
+    srcPingPong.src->begin();
     ofSetColor(100, 100, 120);
     ofDrawCircle(_x * scale, _y * scale, _radius * scale);
-    sourceFbo.end();
+    srcPingPong.src->end();
 }
 
 void ofxReactionDiffusion::addObstacle(int _x, int _y, float _radius) {
-    obstacleFbo.begin();
+    obstaclePingPong.src->begin();
     ofSetColor(255, 0, 0);
     ofDrawCircle(_x * scale, _y * scale, _radius * scale);
-    obstacleFbo.end();
+    obstaclePingPong.src->end();
 }
 
 void ofxReactionDiffusion::clearSources() {
-    sourceFbo.begin();
+    srcPingPong.src->begin();
     ofBackground(255, 0, 0);
-    sourceFbo.end();
+    srcPingPong.src->end();
 }
 
 void ofxReactionDiffusion::clearObstacles() {
-    obstacleFbo.begin();
+    obstaclePingPong.src->begin();
     ofClear(255, 0, 0);
-    obstacleFbo.end();
+    obstaclePingPong.src->end();
 }
 
 void ofxReactionDiffusion::clearAll() {
