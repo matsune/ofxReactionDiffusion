@@ -126,6 +126,7 @@ public:
         setK2(_k2);
         setK3(_k3);
     }
+    
     /*
      Belousov-Zhabotinsky
      */
