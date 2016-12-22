@@ -25,6 +25,31 @@ public:
     void update();
     void draw(int _x=0, int _y=0, float _width=-1, float _height=-1);
     
+    ofTexture getSourceTexture() {
+        return srcPingPong.src->getTexture();
+    }
+
+    ofFbo getSourceFbo() {
+        return *srcPingPong.src;
+    }
+
+    ofTexture getObstacleTexture() {
+        return obstaclePingPong.src->getTexture();
+    }
+    
+    ofFbo getObstacleFbo() {
+        return *obstaclePingPong.src;
+    }
+    
+    ofTexture getColorTexture() {
+        return renderPingPong.src->getTexture();
+    }
+    
+    ofFbo getColorFbo() {
+        return *renderPingPong.src;
+    }
+    
+    
     void setMode(ReactionDiffusionMode _mode) { mode = _mode;}
 
     void addSource(int _x, int _y, float _radius);
@@ -143,7 +168,6 @@ public:
         setBeta(_beta);
         setGamma(_gamma);
     }
-
 private:
     int width, height;
     float scale;
