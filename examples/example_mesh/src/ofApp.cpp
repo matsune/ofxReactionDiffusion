@@ -4,13 +4,13 @@
 void ofApp::setup(){
     ofBackground(0);
     ofSetVerticalSync(true);
+    ofEnableDepthTest();
 
     /*
      ofEasyCam
      */
-    cam.setupPerspective(true, 60, 10, 0, ofVec2f(0.0, 0.3));
-    cam.setDistance(300);
-    cam.tilt(-10);
+    cam.setupPerspective(true, 60, 10, 0, ofVec2f(0.0, 0.0));
+    cam.setDistance(250);
 
     /*
      ofxReactionDiffusion
@@ -21,6 +21,7 @@ void ofApp::setup(){
     rd.setPasses(0.998265);
     rd.setGrayScottParams(0.0239133, 0.0501276, 0.178571, 0.212041);
     
+    /// add Initial Sources
     rd.getSourceFbo().begin();
     ofSetColor(0, 0, 200);
     ofDrawRectangle(100, 100, 100, 100);
@@ -38,16 +39,16 @@ void ofApp::setup(){
             mesh.addColor(ofFloatColor(1.0));
         }
     }
+    
+    /// Shader
     string updatePosVert = STRINGIFY(
-                                      uniform float width;
-                                      uniform float height;
                                       uniform sampler2DRect sourceTex;
                                       uniform sampler2DRect colorTex;
                                      
                                       void main() {
                                           vec2 st = gl_MultiTexCoord0.st;
 
-                                          vec3 pos = vec3(st.x - width/2.0, st.y - height/2.0, texture2DRect(sourceTex, st).b * 50.0);
+                                          vec3 pos = vec3(st.x, st.y, texture2DRect(sourceTex, st).b * 50.0);
                                           vec3 color = texture2DRect(colorTex, st).rgb;
                                           
                                           gl_FrontColor = vec4(color, 1.0);
@@ -67,19 +68,23 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofPushStyle();
+    ofSetWindowTitle(ofToString(ofGetFrameRate()));
+    
     cam.begin();
+    ofPushStyle();
+    
+    ofTranslate(160, -80);
+    ofRotateX(60);
+    ofRotateZ(90);
     
     updatePosShader.begin();
     updatePosShader.setUniformTexture("sourceTex", rd.getSourceTexture(), 0);
     updatePosShader.setUniformTexture("colorTex", rd.getColorTexture(), 1);
-    updatePosShader.setUniform1f("width", ofGetWidth()/scale);
-    updatePosShader.setUniform1f("height", ofGetHeight()/scale);
     mesh.draw();
     updatePosShader.end();
     
-    cam.end();
     ofPopStyle();
+    cam.end();
 }
 
 //--------------------------------------------------------------
