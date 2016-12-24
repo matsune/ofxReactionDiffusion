@@ -1,4 +1,4 @@
-<img src="https://github.com/Ma-tsu-ne/ofxReactionDiffusion/blob/master/thumbnails/header.png" width="700">
+<img src="http://matsune.co/github/header.png" width="700">
 #### ofxReactionDiffusion is openFrameworks addon for visualizing Reaction-Diffusion System using GPU.
 
 ## Installation
