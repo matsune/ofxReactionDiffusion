@@ -1,4 +1,4 @@
-<img src="http://matsune.co/github/header.png" width="700">
+<img src="https://github.com/matsune/ofxReactionDiffusion/blob/master/thumbs/header.png" width="700">
 #### ofxReactionDiffusion is openFrameworks addon for visualizing Reaction-Diffusion System using GPU.
 
 ## Installation
@@ -12,13 +12,13 @@ Copy to `openFrameworks > addons`.
 Reaction-Diffusion System has a few mathematical models and ofxReactionDiffusion implements three models of them.
 
 ### - Gray-Scott
-<img src="http://matsune.co/github/gs.gif" width="500">
+<img src="https://github.com/matsune/ofxReactionDiffusion/blob/master/thumbs/gs.gif" width="500">
 
 ### - FitzHugh-Nagumo
-<img src="http://matsune.co/github/fhn.gif" width="500">
+<img src="https://github.com/matsune/ofxReactionDiffusion/blob/master/thumbs/fhn.gif" width="500">
 
 ### - Belousov-Zhabotinsky
-<img src="http://matsune.co/github/bz.gif" width="500">
+<img src="https://github.com/matsune/ofxReactionDiffusion/blob/master/thumbs/bz.gif" width="500">
 
 ## Usage
 Models are defined `ReactionDiffusionMode` .  
@@ -55,6 +55,6 @@ float gamma;
 #### Examples > example_mesh
 Values, concentration of substances, are stored in FBO(texture) and they are represented as RGB in texture in ofxReactionDiffusion. You can get source texture by `getSourceTexture`.
 
-<img src="http://matsune.co/github/mesh.gif" width="500">
+<img src="https://github.com/matsune/ofxReactionDiffusion/blob/master/thumbs/mesh.gif" width="500">
 
 For example, reaction diffusion values can use for depth of VBOMesh. (See **Examples > example_mesh**)
